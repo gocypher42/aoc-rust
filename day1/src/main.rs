@@ -1,5 +1,5 @@
 fn main() {
-    const INPUT_STR: &str = include_str!("input.txt");
+    const INPUT_STR: &str = include_str!("../inputs/input.txt");
 
     let part_one_result = part_one(INPUT_STR);
     let part_two_result = part_two(INPUT_STR);
