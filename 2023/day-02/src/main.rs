@@ -6,8 +6,8 @@ fn main() {
 
     println!("AOC Day 2");
     println!(" ---- ");
-    println!("Part 1: {:?}", part_one_result);
-    println!("Part 2: {:?}", part_two_result);
+    println!("Part 1: {part_one_result:?}");
+    println!("Part 2: {part_two_result:?}");
     println!(" ---- ");
 }
 

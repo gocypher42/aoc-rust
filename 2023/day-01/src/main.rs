@@ -5,10 +5,10 @@ fn main() {
     let part_two_result = part_two(INPUT_STR);
 
     println!("AOC {}", env!("CARGO_PKG_NAME"));
-    println!(" ---- ");
-    println!("Part 1: {:?}", part_one_result);
-    println!("Part 2: {:?}", part_two_result);
-    println!(" ---- ");
+    println!("-------");
+    println!("Part 1: {part_one_result:?}");
+    println!("Part 2: {part_two_result:?}");
+    println!("-------");
 }
 
 fn part_one(input: &str) -> Option<u32> {
@@ -36,13 +36,13 @@ fn part_one(input: &str) -> Option<u32> {
     Some(result)
 }
 
-const WORD_TO_NUMBER: [&'static str; 9] = [
+const WORD_TO_NUMBER: [&str; 9] = [
     "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
 ];
 
 fn get_val_from_subl(sub_l: &str) -> Option<u32> {
     for i in 0..WORD_TO_NUMBER.len() {
-        if let Some(_) = sub_l.find(WORD_TO_NUMBER.get(i).unwrap()) {
+        if sub_l.contains(WORD_TO_NUMBER.get(i).unwrap()) {
             return Some((i as u32) + 1);
         }
     }
