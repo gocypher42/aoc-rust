@@ -99,7 +99,7 @@ fn can_go_north(
     }
 }
 
-fn can_go_est(
+fn can_go_east(
     grid: &Vec<Vec<Tile>>,
     grid_visited: &Vec<Vec<bool>>,
     current_pos: &Position,
@@ -190,7 +190,7 @@ fn get_next_pos(
             }
         }
         Tile::EastWest => {
-            if let Some(next_pos) = can_go_est(grid, grid_visited, pos) {
+            if let Some(next_pos) = can_go_east(grid, grid_visited, pos) {
                 Some(next_pos)
             } else if let Some(next_pos) = can_go_west(grid, grid_visited, pos) {
                 Some(next_pos)
@@ -201,7 +201,7 @@ fn get_next_pos(
         Tile::NorthEast => {
             if let Some(next_pos) = can_go_north(grid, grid_visited, pos) {
                 Some(next_pos)
-            } else if let Some(next_pos) = can_go_est(grid, grid_visited, pos) {
+            } else if let Some(next_pos) = can_go_east(grid, grid_visited, pos) {
                 Some(next_pos)
             } else {
                 None
@@ -228,7 +228,7 @@ fn get_next_pos(
         Tile::SouthEast => {
             if let Some(next_pos) = can_go_south(grid, grid_visited, pos) {
                 Some(next_pos)
-            } else if let Some(next_pos) = can_go_est(grid, grid_visited, pos) {
+            } else if let Some(next_pos) = can_go_east(grid, grid_visited, pos) {
                 Some(next_pos)
             } else {
                 None
@@ -241,7 +241,7 @@ fn get_next_pos(
                 Some(next_pos)
             } else if let Some(next_pos) = can_go_west(grid, grid_visited, pos) {
                 Some(next_pos)
-            } else if let Some(next_pos) = can_go_est(grid, grid_visited, pos) {
+            } else if let Some(next_pos) = can_go_east(grid, grid_visited, pos) {
                 Some(next_pos)
             } else {
                 None
@@ -250,7 +250,7 @@ fn get_next_pos(
         Tile::Ground => unreachable!(),
     };
     if let Some(next_pos) = next_pos.clone() {
-        println!("{:?}", get_tile_from_grid(grid, &next_pos));
+        // println!("{:?}", get_tile_from_grid(grid, &next_pos));
     }
     next_pos
 }
@@ -278,7 +278,7 @@ fn part_one(input: &str) -> usize {
 
     let mut current_pos = Position::default();
 
-    let mut steps = 0;
+    let mut steps = 1;
 
     for (j, line) in grid.iter().enumerate() {
         for (i, cell) in line.iter().enumerate() {
@@ -299,15 +299,111 @@ fn part_one(input: &str) -> usize {
         current_pos = new_pos;
         grid_visited[current_pos.y][current_pos.x] = true;
         steps += 1;
-        println!("current pos: {:?}", current_pos);
+        // println!("current pos: {:?}", current_pos);
         // print_2d_slice(&grid_visited);
     }
 
-    println!("Steps: {} {}", steps, steps / 2 + 1);
+    steps = steps / 2;
 
-    0
+    println!("Steps: {steps}");
+    steps
 }
 
 fn part_two(input: &str) -> usize {
-    0
+    let grid: Vec<Vec<Tile>> = input
+        .lines()
+        .map(|line| {
+            line.chars()
+                .map(|c| match c {
+                    '|' => Tile::NorthSouth,
+                    '-' => Tile::EastWest,
+                    'L' => Tile::NorthEast,
+                    'J' => Tile::NorthWeast,
+                    '7' => Tile::SouthWeast,
+                    'F' => Tile::SouthEast,
+                    '.' => Tile::Ground,
+                    'S' => Tile::Start,
+                    _ => unreachable!(),
+                })
+                .collect()
+        })
+        .collect();
+    let mut grid_visited: Vec<Vec<bool>> = vec![vec![false; grid[0].len()]; grid.len()];
+
+    let mut current_pos = Position::default();
+
+    for (j, line) in grid.iter().enumerate() {
+        for (i, cell) in line.iter().enumerate() {
+            if *cell == Tile::Start {
+                current_pos.x = i;
+                current_pos.y = j;
+            }
+        }
+    }
+
+    let starting_pos = current_pos.clone();
+
+    grid_visited[current_pos.y][current_pos.x] = true;
+
+    while let Some(new_pos) = get_next_pos(&grid, &grid_visited, &current_pos) {
+        current_pos = new_pos;
+        grid_visited[current_pos.y][current_pos.x] = true;
+    }
+
+    print_2d_slice(&grid);
+    println!();
+
+    let mut grid = grid;
+
+    for (j, line) in grid_visited.iter().enumerate() {
+        for (i, cell) in line.iter().enumerate() {
+            if !cell {
+                grid[j][i] = Tile::Ground;
+            }
+        }
+    }
+
+    print_2d_slice(&grid);
+    println!();
+
+    let all_not_visited = vec![vec![false; grid[0].len()]; grid.len()];
+
+    let (north, south, east, weast) = (
+        can_go_north(&grid, &all_not_visited, &starting_pos).is_some(),
+        can_go_south(&grid, &all_not_visited, &starting_pos).is_some(),
+        can_go_east(&grid, &all_not_visited, &starting_pos).is_some(),
+        can_go_west(&grid, &all_not_visited, &starting_pos).is_some(),
+    );
+
+    grid[starting_pos.y][starting_pos.x] = match (north, south, east, weast) {
+        (true, true, _, _) => Tile::NorthSouth,
+        (true, _, true, _) => Tile::NorthEast,
+        (true, _, _, true) => Tile::NorthWeast,
+        (_, true, true, _) => Tile::SouthEast,
+        (_, true, _, true) => Tile::SouthWeast,
+        (_, _, true, true) => Tile::EastWest,
+        _ => unreachable!(),
+    };
+    print_2d_slice(&grid);
+
+    let grid = grid;
+
+    let mut inside = false;
+
+    let mut inside_grid = vec![vec![false; grid[0].len()]; grid.len()];
+
+    for (j, line) in grid.iter().enumerate() {
+        for (i, cell) in line.iter().enumerate() {
+            match cell {
+                Tile::Ground => inside_grid[j][i] = inside,
+                Tile::NorthSouth | Tile::NorthWeast | Tile::NorthEast => inside = !inside,
+                _ => {}
+            }
+        }
+    }
+    print_2d_slice(&inside_grid);
+
+    let count = inside_grid.iter().flatten().filter(|x| **x == true).count();
+
+    count
 }
