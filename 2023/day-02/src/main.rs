@@ -41,9 +41,6 @@ fn part_one(input: &str) -> u32 {
         for pull in id_and_pulls[1].split(';') {
             let mut rgb = [0, 0, 0];
 
-            pull.split(','
-            )
-
             for color in pull.split(',') {
                 let color_parts: Vec<&str> = color.trim().split(' ').collect();
                 let cubes = color_parts[0].parse::<u32>().unwrap();

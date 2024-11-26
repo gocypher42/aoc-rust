@@ -1,7 +1,7 @@
-use std::{
-    collections::{HashMap, HashSet},
-    fmt::Debug,
-};
+use std::collections::HashMap;
+use std::fmt::Debug;
+
+use utils::Position;
 
 fn main() {
     const INPUT_STR: &str = include_str!("../inputs/input.txt");
@@ -22,12 +22,6 @@ fn main() {
     println!("------");
 }
 
-fn print_2d_slice<T: Debug>(vec: &[T]) {
-    for line in vec {
-        println!("{:?}", line);
-    }
-}
-
 #[derive(PartialEq, Eq, Clone)]
 enum Tile {
     Space,
@@ -44,18 +38,6 @@ impl Debug for Tile {
                 Tile::Galaxy(v) => v.to_string(),
             }
         )
-    }
-}
-
-#[derive(Debug, Clone)]
-struct Position {
-    x: usize,
-    y: usize,
-}
-
-impl Default for Position {
-    fn default() -> Self {
-        Position { x: 0, y: 0 }
     }
 }
 
@@ -215,7 +197,7 @@ fn part_two(input: &str) -> usize {
 
     let mut sum = 0;
 
-    let factor = 1000000-1;
+    let factor = 1000000 - 1;
 
     for i in 1..positions.len() + 1 {
         for j in i..positions.len() + 1 {
