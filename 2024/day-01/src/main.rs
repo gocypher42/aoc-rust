@@ -1,64 +1,45 @@
+use std::collections::HashMap;
+
 use utils::*;
 
 fn main() {
     aoc_main!("../inputs/input.txt");
 }
+fn parse_pairs(input: &str) -> Vec<(usize, usize)> {
+    input
+        .lines()
+        .map(|l| {
+            let (n1, n2) = l.split_once("   ").unwrap();
+            let n1: usize = n1.parse().unwrap();
+            let n2: usize = n2.parse().unwrap();
+            (n1, n2)
+        })
+        .collect()
+}
 
 fn part_one(input: &str) -> usize {
-    let mut l1 = vec![];
-    let mut l2 = vec![];
-    for line in input.lines() {
-        // println!("{:?}", line);
-        let (n1, n2) = line.split_once("   ").unwrap();
-        let (n1, n2): (u32, u32) = (n1.parse().unwrap(), n2.parse().unwrap());
-        l1.push(n1);
-        l2.push(n2);
-        println!("{n1:?} {n2:?}");
-    }
+    let pairs = parse_pairs(input);
+
+    let mut l1: Vec<usize> = pairs.iter().map(|p| p.0).collect();
     l1.sort();
+
+    let mut l2: Vec<usize> = pairs.iter().map(|p| p.1).collect();
     l2.sort();
 
-    print_2d_slice(&l1);
-    print_2d_slice(&l2);
-
-    let l1 = l1;
-    let l2 = l2;
-
-    let mut sum: usize = 0;
-
-    for i in 0..l1.len() {
-        if l1[i] > l2[i] {
-            sum += (l1[i] - l2[i]) as usize;
-        } else {
-            sum += (l2[i] - l1[i]) as usize;
-        }
-    }
-
-    sum
+    l1.iter().zip(l2.iter()).map(|(a, b)| a.abs_diff(*b)).sum()
 }
 
 fn part_two(input: &str) -> usize {
-    let mut l1 = vec![];
-    let mut l2 = vec![];
-    for line in input.lines() {
-        // println!("{:?}", line);
-        let (n1, n2) = line.split_once("   ").unwrap();
-        let (n1, n2): (u32, u32) = (n1.parse().unwrap(), n2.parse().unwrap());
-        l1.push(n1);
-        l2.push(n2);
-        println!("{n1:?} {n2:?}");
+    let pairs = parse_pairs(input);
+
+    let l1: Vec<usize> = pairs.iter().map(|p| p.0).collect();
+
+    let mut l2_count = HashMap::new();
+    for (_, n2) in &pairs {
+        *l2_count.entry(*n2).or_insert(0) += 1;
     }
-    l1.sort();
-    l2.sort();
-
-    // print_2d_slice(&l1);
-    // print_2d_slice(&l2);
-    println!();
-
-    let l1 = l1;
-    let l2 = l2;
 
     l1.iter()
-        .map(|i| (*i as usize) * l2.iter().map(|x| if x == i { 1 } else { 0 }).sum::<usize>())
+        .map(|&n1| n1 * *l2_count.get(&n1).unwrap_or(&0))
         .sum()
 }
