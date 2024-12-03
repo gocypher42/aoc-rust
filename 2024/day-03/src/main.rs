@@ -58,33 +58,15 @@ fn parse_mul(sub: &str) -> Option<usize> {
         return None;
     }
 
-    let end_pos = match sub.find(")") {
-        Some(v) => v,
-        None => return None,
-    };
+    let end_pos = sub.find(')')?;
 
-    if sub[MUL_PAREN.len()..end_pos].find(MUL_PAREN).is_some() {
+    if sub[MUL_PAREN.len()..end_pos].contains(MUL_PAREN) {
         return None;
     }
 
-    let comma_pos = match sub.chars().position(|b| b == ',') {
-        Some(v) => v,
-        None => return None,
-    };
+    let comma_pos = sub.chars().position(|b| b == ',')?;
+    let num1: usize = sub[MUL_PAREN.len()..comma_pos].parse().ok()?;
+    let num2: usize = sub[comma_pos + 1..end_pos].parse().ok()?;
 
-    let num1: usize = match sub[MUL_PAREN.len()..comma_pos].parse() {
-        Ok(v) => v,
-        Err(_) => {
-            return None;
-        }
-    };
-
-    let num2: usize = match sub[comma_pos + 1..end_pos].parse() {
-        Ok(v) => v,
-        Err(_) => {
-            return None;
-        }
-    };
-
-    return Some(num1 * num2);
+    Some(num1 * num2)
 }
