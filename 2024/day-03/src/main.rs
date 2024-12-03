@@ -39,10 +39,10 @@ fn part_two(input: &str) -> usize {
                     None
                 }
                 'm' => {
-                    if !enable {
-                        None
-                    } else {
+                    if enable {
                         parse_mul(sub)
+                    } else {
+                        None
                     }
                 }
                 _ => None,
