@@ -52,37 +52,35 @@ fn part_two(input: &str) -> usize {
 }
 
 const MUL_PAREN: &str = "mul(";
-const PAREN: &str = ")";
-const COMMA: u8 = b',';
 
 fn parse_mul(sub: &str) -> Option<usize> {
     if sub.find(MUL_PAREN) != Some(0) {
         return None;
     }
 
-    let end_pos = match sub.find(PAREN) {
-        Some(val) => val,
+    let end_pos = match sub.find(")") {
+        Some(v) => v,
         None => return None,
     };
 
-    if let Some(_) = sub[MUL_PAREN.len()..end_pos].find(MUL_PAREN) {
+    if sub[MUL_PAREN.len()..end_pos].find(MUL_PAREN).is_some() {
         return None;
     }
 
-    let comma_pos = match sub.as_bytes().iter().position(|b| *b == COMMA) {
+    let comma_pos = match sub.chars().position(|b| b == ',') {
         Some(v) => v,
         None => return None,
     };
 
     let num1: usize = match sub[MUL_PAREN.len()..comma_pos].parse() {
-        Ok(val) => val,
+        Ok(v) => v,
         Err(_) => {
             return None;
         }
     };
 
     let num2: usize = match sub[comma_pos + 1..end_pos].parse() {
-        Ok(val) => val,
+        Ok(v) => v,
         Err(_) => {
             return None;
         }
