@@ -131,10 +131,11 @@ fn part_two(input: &str) -> usize {
                         return None;
                     }
 
-                    if ((data_ref[j - 1][i - 1] == 'M' && data_ref[j + 1][i + 1] == 'S')
-                        || (data_ref[j - 1][i - 1] == 'S' && data_ref[j + 1][i + 1] == 'M'))
-                        && ((data_ref[j - 1][i + 1] == 'M' && data_ref[j + 1][i - 1] == 'S')
-                            || (data_ref[j - 1][i + 1] == 'S' && data_ref[j + 1][i - 1] == 'M'))
+                    let bs = [&data_ref[j - 1][i - 1], &data_ref[j + 1][i + 1]];
+                    let fs = [&data_ref[j - 1][i + 1], &data_ref[j + 1][i - 1]];
+
+                    if ((bs == [&'M', &'S']) || (bs == [&'S', &'M']))
+                        && ((fs == [&'M', &'S']) || (fs == [&'S', &'M']))
                     {
                         return Some(());
                     }
