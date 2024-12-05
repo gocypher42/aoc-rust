@@ -38,11 +38,9 @@ fn part_one(input: &str) -> usize {
     pages_list
         .into_iter()
         .filter_map(|pages| {
-            for i in 0..pages.len() {
-                let idx = pages.len() - i - 1;
-                let page = pages.get(idx).unwrap();
+            for (i, page) in pages.iter().enumerate().rev() {
                 if let Some(list) = rules.get(page) {
-                    if pages[..idx].iter().any(|p| list.contains(p)) {
+                    if pages[..i].iter().any(|p| list.contains(p)) {
                         return None;
                     }
                 }
@@ -69,11 +67,9 @@ fn part_two(input: &str) -> usize {
 
 fn order_pages(rules: &HashMap<usize, Vec<usize>>, pages: &mut Vec<usize>) -> bool {
     let mut pages_to_replace: Vec<usize> = vec![];
-    for i in 0..pages.len() {
-        let idx = pages.len() - i - 1;
-        let page = pages.get(idx).unwrap();
+    for (i, page) in pages.iter().enumerate().rev() {
         if let Some(list) = rules.get(page) {
-            for p in &pages[..idx] {
+            for p in &pages[..i] {
                 if list.contains(p) && !pages_to_replace.contains(page) {
                     pages_to_replace.push(*page);
                 }
@@ -89,16 +85,11 @@ fn order_pages(rules: &HashMap<usize, Vec<usize>>, pages: &mut Vec<usize>) -> bo
 
     for page_to_place in pages_to_replace {
         let page_rules = rules.get(&page_to_place).unwrap();
-
-        for i in 0..pages.len() {
-            let idx = pages.len() - i - 1;
-
-            if pages[..idx].iter().any(|x| page_rules.contains(x)) {
-                continue;
+        for i in (0..pages.len()).rev() {
+            if !pages[..i].iter().any(|x| page_rules.contains(x)) {
+                pages.insert(i, page_to_place);
+                break;
             }
-
-            pages.insert(idx, page_to_place);
-            break;
         }
     }
     false
