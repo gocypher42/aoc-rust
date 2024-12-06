@@ -28,7 +28,7 @@ pub fn print_2d_slice<T: Debug>(vec: &[T]) {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Position {
     pub x: usize,
     pub y: usize,
