@@ -5,6 +5,7 @@ use utils::*;
 fn main() {
     aoc_main!("../inputs/input.txt");
 }
+
 fn parse_pairs(input: &str) -> Vec<(usize, usize)> {
     input
         .lines()
