@@ -76,15 +76,7 @@ fn part_one(input: &str) -> usize {
 
     grid_anti
         .iter()
-        .flat_map(|row| {
-            row.iter().filter_map(|cell| {
-                if *cell == Tile::Freq('#') {
-                    Some(())
-                } else {
-                    None
-                }
-            })
-        })
+        .flat_map(|row| row.iter().filter(|&cell| *cell == Tile::Freq('#')))
         .count()
 }
 
@@ -151,14 +143,6 @@ fn part_two(input: &str) -> usize {
 
     grid_anti
         .iter()
-        .flat_map(|row| {
-            row.iter().filter_map(|cell| {
-                if *cell == Tile::Freq('#') {
-                    Some(())
-                } else {
-                    None
-                }
-            })
-        })
+        .flat_map(|row| row.iter().filter(|&cell| *cell == Tile::Freq('#')))
         .count()
 }

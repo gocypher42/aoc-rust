@@ -10,19 +10,18 @@ fn part_one(input: &str) -> usize {
         .lines()
         .map(|l| {
             let (s1, s2) = l.split_once(':').unwrap();
-            (
-                s1.parse::<usize>().unwrap(),
-                s2.trim()
-                    .split(' ')
-                    .map(|c| c.parse().unwrap())
-                    .collect::<Vec<usize>>(),
-            )
-        })
-        .filter_map(|(target, values)| {
+
+            let target = s1.parse::<usize>().unwrap();
+            let values = s2
+                .trim()
+                .split(' ')
+                .map(|c| c.parse().unwrap())
+                .collect::<Vec<usize>>();
+
             if possible_part1(values[0], &values[1..], target) {
-                Some(target)
+                target
             } else {
-                None
+                0
             }
         })
         .sum()
@@ -53,19 +52,18 @@ fn part_two(input: &str) -> usize {
         .lines()
         .map(|l| {
             let (s1, s2) = l.split_once(':').unwrap();
-            (
-                s1.parse::<usize>().unwrap(),
-                s2.trim()
-                    .split(' ')
-                    .map(|c| c.parse().unwrap())
-                    .collect::<Vec<usize>>(),
-            )
-        })
-        .filter_map(|(target, values)| {
+
+            let target = s1.parse::<usize>().unwrap();
+            let values = s2
+                .trim()
+                .split(' ')
+                .map(|c| c.parse().unwrap())
+                .collect::<Vec<usize>>();
+
             if possible_part2(values[0], &values[1..], target) {
-                Some(target)
+                target
             } else {
-                None
+                0
             }
         })
         .sum()
