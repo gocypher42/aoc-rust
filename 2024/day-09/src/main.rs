@@ -132,55 +132,62 @@ fn part_two(input: &str) -> usize {
             s != 0
         })
         .collect();
-    print_2d_slice(&blocks);
-    println!();
+
+    let mut files_to_skip = 0;
 
     loop {
+        let Some((
+            pos,
+            Block::File {
+                id,
+                size: file_size,
+            },
+        )) = blocks
+            .iter()
+            .enumerate()
+            .rev()
+            .filter(|(_, x)| match x {
+                Block::Free { .. } => false,
+                Block::File { .. } => true,
+            })
+            .skip(files_to_skip)
+            .nth(0)
+        else {
+            break;
+        };
 
-        if let Block::Free { .. } = blocks.last().unwrap() {
-            blocks.pop();
-            continue;
-        }
+        let swap = *file_size;
 
-        if let Block::File { id, size } = blocks.last().unwrap() {
-            let size_to_swap = *size;
-            let free_space_block = match blocks.iter().position(|x| match x {
+        let Some((free_pos, Block::Free { .. })) =
+            blocks.iter().enumerate().take(pos).find(|(_, x)| match x {
                 Block::Free { size: free_size } => {
-                    if free_size >= size {
-                        return true;
+                    if free_size >= file_size {
+                        true
+                    } else {
+                        false
                     }
-                    false
                 }
                 Block::File { .. } => false,
-            }) {
-                Some(p) => p,
-                None => break,
-            };
+            })
+        else {
+            files_to_skip += 1;
+            continue;
+        };
 
-            blocks.insert(
-                free_space_block,
-                Block::File {
-                    id: *id,
-                    size: size_to_swap,
-                },
-            );
+        blocks.insert(
+            free_pos,
+            Block::File {
+                id: *id,
+                size: swap,
+            },
+        );
 
-            if let Block::Free { size: free_size } = blocks.get_mut(free_space_block + 1).unwrap() {
-                *free_size -= size_to_swap;
-            }
-
-            //
-            // if let Block::File { size, .. } = blocks.last_mut().unwrap() {
-            //     *size -= size_to_swap;
-            //     if *size == 0 {
-            //         blocks.pop();
-            //     }
-            // }
-
-            break;
+        if let Block::Free { size } = blocks.get_mut(free_pos + 1).unwrap() {
+            *size -= swap;
         }
+
+        *blocks.get_mut(pos + 1).unwrap() = Block::Free { size: swap };
     }
-    print_2d_slice(&blocks);
 
     let mut id = 0;
     blocks
