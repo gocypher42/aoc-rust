@@ -127,10 +127,12 @@ fn part_two(input: &str) -> usize {
             .take(pos)
             .find(|(_, block)| matches!(block, Block::Free { size } if *size >= swap));
 
-        let Some((free_pos, Block::Free { .. })) = free_block else {
+        let Some((free_pos, Block::Free { size: free_size })) = free_block else {
             files_to_skip += 1;
             continue;
         };
+
+        let free_left = free_size - swap;
 
         blocks.insert(
             free_pos,
@@ -140,10 +142,7 @@ fn part_two(input: &str) -> usize {
             },
         );
 
-        if let Block::Free { size } = blocks.get_mut(free_pos + 1).unwrap() {
-            *size -= swap;
-        }
-
+        *blocks.get_mut(free_pos + 1).unwrap() = Block::Free { size: free_left };
         *blocks.get_mut(pos + 1).unwrap() = Block::Free { size: swap };
     }
 
