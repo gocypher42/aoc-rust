@@ -18,6 +18,9 @@ My take on aoc in rust.
 - [day-04](/2024/day-04)
 - [day-05](/2024/day-05)
 - [day-06](/2024/day-06)
+- [day-07](/2024/day-07)
+- [day-08](/2024/day-08)
+- [day-09](/2024/day-09) 
   
 ### References
 - [Advent of Code](https://adventofcode.com/)
