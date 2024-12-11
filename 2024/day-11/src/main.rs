@@ -13,13 +13,11 @@ fn part_one(input: &str) -> usize {
         .map(|s| s.parse().unwrap())
         .collect();
 
-    let max_steps = 25;
-
     let mut cache = HashMap::new();
 
     stones
         .iter()
-        .map(|v| number_of_stone(*v, 0, max_steps, &mut cache))
+        .map(|v| number_of_stones(*v, 0, 25, &mut cache))
         .sum()
 }
 
@@ -29,17 +27,15 @@ fn part_two(input: &str) -> usize {
         .map(|s| s.parse().unwrap())
         .collect();
 
-    let max_steps = 75;
-
     let mut cache = HashMap::new();
 
     stones
         .iter()
-        .map(|v| number_of_stone(*v, 0, max_steps, &mut cache))
+        .map(|v| number_of_stones(*v, 0, 75, &mut cache))
         .sum()
 }
 
-fn number_of_stone(
+fn number_of_stones(
     stone: usize,
     step: usize,
     max_step: usize,
@@ -53,28 +49,19 @@ fn number_of_stone(
         return *v;
     }
 
-    if stone == 0 {
-        let s = 1;
-        let v = number_of_stone(s, step + 1, max_step, cache);
-        cache.entry((stone, step)).or_insert(v);
-        return v;
-    }
+    let v = if stone == 0 {
+        number_of_stones(1, step + 1, max_step, cache)
+    } else {
+        let s = stone.to_string();
+        if s.len() % 2 == 0 {
+            let middle = s.len() / 2;
+            number_of_stones(s[..middle].parse().unwrap(), step + 1, max_step, cache)
+                + number_of_stones(s[middle..].parse().unwrap(), step + 1, max_step, cache)
+        } else {
+            number_of_stones(stone * 2024, step + 1, max_step, cache)
+        }
+    };
 
-    let s = stone.to_string();
-    if s.len() % 2 == 0 {
-        let middle = s.len() / 2;
-        let stone1 = s[..middle].parse().unwrap();
-        let v1 = number_of_stone(stone1, step + 1, max_step, cache);
-
-        let stone2 = s[middle..].parse().unwrap();
-        let v2 = number_of_stone(stone2, step + 1, max_step, cache);
-
-        let v = v1 + v2;
-        cache.entry((stone, step)).or_insert(v);
-        return v;
-    }
-
-    let v = number_of_stone(stone * 2024, step + 1, max_step, cache);
     cache.entry((stone, step)).or_insert(v);
     v
 }
