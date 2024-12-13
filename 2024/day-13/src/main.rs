@@ -14,38 +14,33 @@ struct Config {
 
 impl Config {
     fn resolve(&self) -> Option<(f64, f64)> {
-        let mut m: [[f64; 3]; 2] = [
-            [self.a.x as f64, self.b.x as f64, self.target.x as f64],
-            [self.a.y as f64, self.b.y as f64, self.target.y as f64],
+        let m: [[f64; 2]; 2] = [
+            [self.a.x as f64, self.b.x as f64],
+            [self.a.y as f64, self.b.y as f64],
         ];
 
-        m[0][1] = m[0][1] / m[0][0];
-        m[0][2] = m[0][2] / m[0][0];
-        m[0][0] = m[0][0] / m[0][0];
+        let f = 1.0 / ((m[0][0] * m[1][1]) - (m[0][1] * m[1][0]));
 
-        m[1][1] = m[1][1] - (m[0][1] * m[1][0]);
-        m[1][2] = m[1][2] - (m[0][2] * m[1][0]);
-        m[1][0] = m[1][0] - (m[0][0] * m[1][0]);
+        let m_i: [[f64; 2]; 2] = [
+            [m[1][1] * f, m[0][1] * -1.0 * f],
+            [m[1][0] * -1.0 * f, m[0][0] * f],
+        ];
 
-        if m[1][1] < 0.0 && m[1][2] < 0.0 {
-            m[1][1] *= -1.0;
-            m[1][2] *= -1.0;
-        }
+        let c_a = m_i[0][0] * (self.target.x as f64) + m_i[0][1] * (self.target.y as f64);
+        let c_b = m_i[1][0] * (self.target.x as f64) + m_i[1][1] * (self.target.y as f64);
 
-        let b = m[1][2] / m[1][1];
-        let a = m[0][2] - (m[0][1] * b);
-
-        if b < 0.0 || a < 0.0 {
+        if c_b < 0.0 || c_a < 0.0 {
             return None;
         }
 
-        let dx = (a.round() * (self.a.x as f64) + b.round() * (self.b.x as f64)) as usize;
-        let dy = (a.round() * (self.a.y as f64) + b.round() * (self.b.y as f64)) as usize;
+        let dx = (c_a.round() * m[0][0] + c_b.round() * m[0][1]) as usize;
+        let dy = (c_a.round() * m[1][0] + c_b.round() * m[1][1]) as usize;
+
         if self.target.x != dx || self.target.y != dy {
             return None;
         }
 
-        Some((a, b))
+        Some((c_a, c_b))
     }
 }
 
