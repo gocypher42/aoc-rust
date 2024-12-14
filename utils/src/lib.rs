@@ -40,3 +40,56 @@ impl Default for Position {
     }
 }
 
+pub fn get_col<T>(grid: &[Vec<T>], idx: isize) -> Vec<&T> {
+    if grid.is_empty() {
+        return vec![];
+    }
+
+    grid.iter()
+        .map(|row| {
+            if idx >= 0 {
+                &row[idx as usize]
+            } else {
+                &row[row.len() - idx.abs() as usize]
+            }
+        })
+        .collect()
+}
+
+pub fn get_col_mut<T>(grid: &mut [Vec<T>], idx: isize) -> Vec<&mut T> {
+    if grid.is_empty() {
+        return vec![];
+    }
+
+    let row_len = grid[0].len();
+    grid.iter_mut()
+        .map(|row| {
+            if idx >= 0 {
+                &mut row[idx as usize]
+            } else {
+                &mut row[row_len - idx.abs() as usize]
+            }
+        })
+        .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_col() {
+        let t = vec![vec![1, 2], vec![3, 4]];
+        let col = get_col(&t, 1 as isize);
+        assert_eq!(col, [&2, &4]);
+    }
+
+    #[test]
+    fn test_get_col_neg_idx() {
+        let t = vec![vec![1, 2], vec![3, 4]];
+        let col = get_col(&t, -1);
+        assert_eq!(col, [&2, &4]);
+        let col = get_col(&t, -2);
+        assert_eq!(col, [&1, &3]);
+    }
+}
